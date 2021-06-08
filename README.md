@@ -1,4 +1,5 @@
 # np-2021
+[![Pylint](https://gitlab.ub.uni-bielefeld.de/manuel.hettich/np-2021/-/jobs/artifacts/main/raw/pylint/pylint.svg?job=pylint)](https://gitlab.ub.uni-bielefeld.de/manuel.hettich/np-2021)
 
 Blockchain Server und Client
 
