@@ -11,6 +11,7 @@ lazy-object-proxy==1.6.0
 mccabe==0.6.1
 pydantic==1.8.2
 pylint==2.8.3
+python-multipart==0.0.5
 requests==2.25.1
 starlette==0.14.2
 toml==0.10.2
