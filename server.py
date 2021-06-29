@@ -1,16 +1,18 @@
 import pickle
 from fastapi import FastAPI, File, UploadFile
-import block
+from block import Block
 
 app = FastAPI()
 
 
-@app.post("/send/")
+@app.post("/send")
 def send_file(file: UploadFile = File(...)):
-    received_block: block = pickle.loads(file.file.read())
-    return {"hash": received_block.hash, "hash_previous": received_block.hash_previous}
+    received_blocks: [Block] = pickle.loads(file.file.read())
+    return {"hash": received_blocks[0].hash,
+            "index_all": received_blocks[0].index_all,
+            "hash_previous": received_blocks[0].hash_previous}
 
 
-@app.post("/check/")
-def check_file(file: UploadFile = File(...)):
-    return {"filename": file.filename}
+@app.get("/check")
+def check_file(file_hash: str):
+    return {"file_hash": file_hash}

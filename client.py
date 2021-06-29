@@ -21,9 +21,9 @@ if __name__ == "__main__":
             if len(user_input) != 2:
                 continue
 
-            # Parse command and filename from provided user input
+            # Parse command and filepath from provided user input
             command = user_input[0]
-            filename = user_input[1]
+            filepath = user_input[1]
 
             if command == "quit":
                 # Quit program
@@ -31,17 +31,25 @@ if __name__ == "__main__":
 
             elif command == "send":
                 # Send a new file to the blockchain server
-                blocks = block.Block.generate_blocks(filename)
-                for block in blocks:
-                    response = requests.post(f"http://{host}:{port}/send",
-                                             files={"file": pickle.dumps(block)})
-                    print(response.text)
+
+                # Generate the necessary blocks of the local file
+                blocks = block.generate_blocks(filepath)
+                # Collect all blocks into a single binary file using pickle
+                blocks_pickled = pickle.dumps(blocks)
+                # Send the collected blocks in a single transfer to the server
+                response = requests.post(f"http://{host}:{port}/send",
+                                         files={"file": blocks_pickled})
+                # Print the response from the server
+                print(response.text)
 
             elif command == "check":
-                # Check if a local file is stored on the blockchain server
-                file = {"file": open(filename, "rb")}
-                response = requests.post(f"http://{host}:{port}/check",
-                                         files=file)
+                # Check if a local file is stored on the blockchain server by sending its
+                # SHA256 hash (checksum)
+                file_hash = block.calculate_file_hash(filepath)
+                response = requests.get(f"http://{host}:{port}/check",
+                                        params={"file_hash": file_hash})
+
+                # Print the response from the server
                 print(response.text)
 
             else:
