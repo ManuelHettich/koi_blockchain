@@ -3,7 +3,8 @@ import pickle
 import requests
 import block
 
-if __name__ == "__main__":
+
+def main():
     if len(sys.argv) != 3:
         print(f"usage: {sys.argv[0]} host port")
         sys.exit()
@@ -12,13 +13,13 @@ if __name__ == "__main__":
         host = sys.argv[1]
         port = sys.argv[2]
 
+        print("[send] / [check] a local file or [quit]")
         while True:
-            print("[send] / [check] a local file or [quit]")
-
             # Ask for an input from user
             user_input = input("> ").split()
 
-            if len(user_input) != 2:
+            if len(user_input) < 1 or len(user_input) > 2:
+                print("[send] / [check] a local file or [quit]")
                 continue
 
             # Parse command and filepath from provided user input
@@ -40,7 +41,7 @@ if __name__ == "__main__":
                 response = requests.post(f"http://{host}:{port}/send",
                                          files={"file": blocks_pickled})
                 # Print the response from the server
-                print(response.text)
+                print(f"Response from Server: {response.text}")
 
             elif command == "check":
                 # Check if a local file is stored on the blockchain server by sending its
@@ -50,7 +51,11 @@ if __name__ == "__main__":
                                         params={"file_hash": file_hash})
 
                 # Print the response from the server
-                print(response.text)
+                print(f"Response from Server: {response.text}")
 
             else:
                 print("The provided command is unknown")
+                print("[send] / [check] a local file or [quit]")
+
+if __name__ == "__main__":
+    main()
