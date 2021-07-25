@@ -6,6 +6,16 @@ blocks: [Block] = list()
 app = FastAPI()
 
 
+@app.get("/")
+def health_check():
+    """
+    Indicate whether the server is online and reachable for the client.
+
+    :return: A statement in JSON format whether the server is online
+    """
+    return {"online": True}
+
+
 @app.post("/send")
 def send_file(file: UploadFile = File(...)):
     """
