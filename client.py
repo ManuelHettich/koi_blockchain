@@ -2,7 +2,7 @@ import argparse
 import sys
 import pickle
 import requests
-import block
+from lib import block
 
 
 def main():

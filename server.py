@@ -1,6 +1,6 @@
 import pickle
 from fastapi import FastAPI, File, UploadFile
-from block import Block
+from lib.block import Block
 
 blocks: [Block] = list()
 app = FastAPI()
