@@ -34,7 +34,8 @@ def send_file(file: UploadFile = File(...)):
         blocks.append(received_blocks)
 
     # Return the hash of the original file and the number of blocks to the client as JSON
-    return {"hash": received_blocks[0].hash,
+    return {"success": True,
+            "hash": received_blocks[0].hash,
             "index_all": len(received_blocks)}
 
 
