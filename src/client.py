@@ -2,7 +2,7 @@ import argparse
 import sys
 import pickle
 import requests
-from lib import block
+from src import block
 
 SERVER_ID = "8dbaaa72-ff7a-4f95-887c-e3109e577edd"
 

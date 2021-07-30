@@ -4,11 +4,11 @@
 Blockchain Server und Client für Netzwerkprogrammierung (SS2021)
 
 ## Starten des Servers
-`$ uvicorn server:app`
+`$ python3 -m src.server`
 
 
 ## Starten & Verwendung des Clients
-`$ python3 client.py 127.0.0.1 8000`
+`$ python3 -m src.client 127.0.0.1 8000`
 
 `> send test_files/isaac-martin-61d2hT57MAE-unsplash.jpg`
 `> check test_files/isaac-martin-61d2hT57MAE-unsplash.jpg`
