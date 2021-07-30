@@ -3,7 +3,7 @@ image: python:3.8.0-slim
 pylint:
   stage: test
   before_script:
-    - pip install pylint pylint-exit anybadge
+    - pip install pylint pylint-exit anybadge fastapi uvicorn requests
   script:
     - mkdir ./pylint
     - find . -type f -name "*.py" | xargs pylint --output-format=text | tee ./pylint/pylint.log || pylint-exit $?
