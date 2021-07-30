@@ -15,6 +15,16 @@ def main():
     host = args.host
     port = args.port
 
+    # Check if the given server is online and reports a correct ID
+    try:
+        response = requests.get(f"http://{host}:{port}/")
+        if not response.ok or response.json()["ID"] != "8dbaaa72-ff7a-4f95-887c-e3109e577edd":
+            print("Could not connect to the given server or verify its authenticity")
+            sys.exit()
+    except requests.exceptions.RequestException:
+        print("Could not connect to the given server or verify its authenticity")
+        sys.exit()
+
     # Ask for user input what to do next
     print("[send] / [check] a local file or [quit]")
     while True:
@@ -57,6 +67,7 @@ def main():
         else:
             print("The provided command is unknown")
             print("[send] / [check] a local file or [quit]")
+
 
 if __name__ == "__main__":
     main()

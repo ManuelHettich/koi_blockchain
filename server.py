@@ -9,11 +9,12 @@ app = FastAPI()
 @app.get("/")
 def health_check():
     """
-    Indicate whether the server is online and reachable for the client.
+    Indicate whether the server is online and reachable for the client. It also
+    provides a unique ID to check its authenticity by the client.
 
-    :return: A statement in JSON format whether the server is online
+    :return: A statement in JSON format with the unique ID of this server.
     """
-    return {"online": True}
+    return {"ID": "8dbaaa72-ff7a-4f95-887c-e3109e577edd"}
 
 
 @app.post("/send")
