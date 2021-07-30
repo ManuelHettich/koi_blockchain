@@ -7,6 +7,12 @@ from src.block import generate_blocks
 client = TestClient(app)
 
 
+def test_server_online():
+    response = client.get("/")
+    assert response.ok
+    assert response.json() == {"ID": "8dbaaa72-ff7a-4f95-887c-e3109e577edd"}
+
+
 def test_send_server():
     # Generate the blocks for the test file
     test_file = os.path.join(os.path.dirname(__file__),
