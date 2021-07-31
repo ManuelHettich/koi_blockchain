@@ -133,6 +133,42 @@ def test_server_send_second_file():
                "index_all": 1704}
 
 
+def test_server_send_empty_file():
+    """
+    Check if the server can correctly handle an empty file.
+
+    :return: None
+    """
+
+    # Generate the blocks for the empty test file which is not already present on the server
+    empty_file = os.path.join(os.path.dirname(__file__), "../test_files/empty.txt")
+    # Ask the server for the hash of the last block
+    response = client.get("/latest_block_hash")
+    last_block_hash = response.json()["last_block_hash"]
+    block = generate_blocks(empty_file, last_block_hash)
+    # Encode the generated block into a binary file using pickle
+    block_pickled = pickle.dumps(block)
+    # Send the encoded block to the test server
+    response = client.post("/send",
+                           files={"file": block_pickled})
+
+    assert response.ok
+    assert response.json() \
+           == {"success": True,
+               "new_file": True,
+               "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+               "index_all": 1}
+
+    # Send the SHA256 checksum of the empty file to the server to be checked
+    response = client.get("/check",
+                          params={"file_hash": block[0].hash,
+                                  "index_all": block[0].index_all})
+    assert response.ok
+    assert response.json() \
+           == {"check": True,
+               "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+
+
 def test_server_integrity_check():
     """
     Check if the server can correctly check the integrity of its chain.

@@ -133,6 +133,10 @@ def generate_blocks(filepath, last_block_hash: str):
         filesize = os.path.getsize(filepath)
         index_all = filesize // 500 + (filesize % 500 > 0)
 
+        # Make sure the index_all is non-zero if the opened file is empty
+        if index_all == 0:
+            index_all = 1
+
         # Create the first block of the given file
         chunk = file.read(500)
         first_block = Block(file_hash=file_hash,

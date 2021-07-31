@@ -59,7 +59,7 @@ Response from Server: {'integrity_check': True}
 Alle Tests der wichtigsten Funktionen werden mit pytest anhand des folgenden Befehlsaufrufs im Hauptordner
 des Projekts durchgeführt: 
 
-`$ pytest`
+`$ pytest -v`
 
 
 ## Importierte Third-Party Packages
