@@ -6,6 +6,11 @@ from src import block
 
 SERVER_ID = "8dbaaa72-ff7a-4f95-887c-e3109e577edd"
 
+HELP_MSG = "[send] / [check] a local file (relative path from root folder) or [quit]"
+ERROR_CMD_MSG = "The provided command is unknown or the filepath is missing"
+ERROR_FILE_MSG = "Could not access the given filepath"
+ERROR_SRV_MSG = "Could not connect to the given server and verify its authenticity"
+
 
 def main():
     """
@@ -25,37 +30,43 @@ def main():
     # Check if the given server is online and reports a correct ID
     check_connection(host, port)
 
-    # Ask for user input what to do next
-    print("[send] / [check] a local file or [quit]")
     while True:
-        # Ask for an input from user
+        # Ask user for an input what to do next
+        print(HELP_MSG)
         user_input = input("> ").split()
 
+        # Wrong amount of inputs
         if len(user_input) < 1 or len(user_input) > 2:
-            print("[send] / [check] a local file or [quit]")
+            print(ERROR_CMD_MSG)
             continue
 
-        # Parse command from provided user input
-        command = user_input[0]
-        # Quit program if the user entered "quit"
-        if command == "quit":
-            sys.exit()
-
-        # Parse filepath from provided user input
-        filepath = user_input[1]
-
-        if command == "send":
-            # Send a new file to the blockchain server
-            send(filepath, host, port)
-
-        elif command == "check":
-            # Check if a local file is stored on the blockchain server by sending its
-            # SHA256 hash (checksum)
-            check(filepath, host, port)
-
+        # Only one input term
+        if len(user_input) == 1:
+            if user_input[0] == "quit":
+                # Quit program if the user only entered "quit"
+                sys.exit()
+            else:
+                print(ERROR_CMD_MSG)
+                continue
         else:
-            print("The provided command is unknown")
-            print("[send] / [check] a local file or [quit]")
+            # In this case we have got 2 input terms from the user
+            # Parse command and filepath from provided user input
+            command = user_input[0]
+            filepath = user_input[1]
+
+            if command == "send":
+                # Send a new file to the blockchain server
+                send(filepath, host, port)
+
+            elif command == "check":
+                # Check if a local file is stored on the blockchain server by sending its
+                # SHA256 hash (checksum)
+                check(filepath, host, port)
+
+            else:
+                # Could not parse a correct command
+                print(ERROR_CMD_MSG)
+                print(HELP_MSG)
 
 
 def check_connection(host: str, port: int):
@@ -66,8 +77,10 @@ def check_connection(host: str, port: int):
     :param port: The port of the server
     :return: None
     """
+
     connection_error = False
     try:
+        # Check the root path of the server to see if it provides the correct ID
         response = requests.get(f"http://{host}:{port}/")
         if not response.ok or response.json()["ID"] != SERVER_ID:
             connection_error = True
@@ -75,7 +88,8 @@ def check_connection(host: str, port: int):
         connection_error = True
 
     if connection_error:
-        print("Could not connect to the given server and verify its authenticity")
+        # A connection to the authenticated server could not be established
+        print(ERROR_SRV_MSG)
         sys.exit()
 
 
@@ -104,15 +118,27 @@ def send(filepath: str, host: str, port: int):
     :return: None
     """
 
-    # Generate the necessary blocks of the local file
-    blocks = block.generate_blocks(filepath)
-    # Collect all blocks into a single binary file using pickle
-    blocks_pickled = pickle.dumps(blocks)
-    # Send the collected blocks in a single transfer to the server
-    response = requests.post(f"http://{host}:{port}/send",
-                             files={"file": blocks_pickled})
-    # Print the response from the server
-    print(f"Response from Server: {response.json()}")
+    try:
+        # Generate all the necessary blocks of the local file
+        blocks = block.generate_blocks(filepath)
+
+        # Collect all blocks into a single binary file using pickle
+        blocks_pickled = pickle.dumps(blocks)
+
+        # Check connection to the server and its authenticity
+        check_connection(host, port)
+
+        # Send the collected blocks in a single transfer to the server
+        response = requests.post(f"http://{host}:{port}/send",
+                                 files={"file": blocks_pickled})
+
+        # Print the response from the server
+        print(f"Response from Server: {response.json()}")
+    except requests.exceptions.RequestException:
+        print(ERROR_SRV_MSG)
+        sys.exit()
+    except IOError:
+        print(ERROR_FILE_MSG)
 
 
 def check(filepath: str, host: str, port: int):
@@ -127,13 +153,24 @@ def check(filepath: str, host: str, port: int):
     :return: None
     """
 
-    # Generate the SHA256 checksum of the given file
-    file_hash = block.calculate_file_hash(filepath)
-    response = requests.get(f"http://{host}:{port}/check",
-                            params={"file_hash": file_hash})
+    try:
+        # Generate the SHA256 checksum of the given file
+        file_hash = block.calculate_file_hash(filepath)
 
-    # Print the response from the server
-    print(f"Response from Server: {response.json()}")
+        # Check connection to the server and its authenticity
+        check_connection(host, port)
+
+        # Send the SHA256 checksum of the file to the server to be checked
+        response = requests.get(f"http://{host}:{port}/check",
+                                params={"file_hash": file_hash})
+
+        # Print the response from the server
+        print(f"Response from Server: {response.json()}")
+    except requests.exceptions.RequestException:
+        print(ERROR_SRV_MSG)
+        sys.exit()
+    except IOError:
+        print(ERROR_FILE_MSG)
 
 
 if __name__ == "__main__":

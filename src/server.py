@@ -50,13 +50,13 @@ def check_file(file_hash: str):
     been sent and stored on this server.
 
     :param file_hash: SHA256 hash checksum of a file stored on the client
-    :return: The result of the check as JSON in the format {"check": boolean}
+    :return: The result of the check as JSON in the format {"check": boolean, "hash": file_hash}
     """
 
     for blocks_per_file in blocks:
         if blocks_per_file[0].hash == file_hash:
-            return {"check": True}
-    return {"check": False}
+            return {"check": True, "hash": file_hash}
+    return {"check": False, "hash": file_hash}
 
 
 if __name__ == '__main__':

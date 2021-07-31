@@ -16,7 +16,7 @@ class Block:
 
     def generate_hash(self):
         """
-        Generates a SHA256 hash of the given block instance, using its four attributes:
+        Generate a SHA256 hash of the given block instance, using its four attributes:
         hash, index_all, chunk and hash_previous.
 
         :return: SHA256 hash of this block instance using all its attributes.
@@ -48,38 +48,34 @@ def calculate_file_hash(filepath):
 
 
 def generate_blocks(filepath):
-    try:
-        # Get the SHA256 hash of the whole file
-        file_hash = calculate_file_hash(filepath)
+    # Get the SHA256 hash of the whole file
+    file_hash = calculate_file_hash(filepath)
 
-        # Generate the necessary number of blocks for the file
-        blocks = []
-        with open(filepath, "rb") as file:
-            # Calculate the number of blocks needed for this file
-            filesize = os.path.getsize(filepath)
-            index_all = filesize // 500 + (filesize % 500 > 0)
+    # Generate the necessary number of blocks for the file
+    blocks = []
+    with open(filepath, "rb") as file:
+        # Calculate the number of blocks needed for this file
+        filesize = os.path.getsize(filepath)
+        index_all = filesize // 500 + (filesize % 500 > 0)
 
-            # Create the first block of the given file
-            chunk = file.read(500)
-            first_block = Block(file_hash=file_hash,
+        # Create the first block of the given file
+        chunk = file.read(500)
+        first_block = Block(file_hash=file_hash,
+                            index_all=index_all,
+                            chunk=chunk,
+                            hash_previous='0')
+        blocks.append(first_block)
+
+        # Process the rest of the file
+        chunk = file.read(500)
+        while chunk:
+            blocks.append(Block(file_hash=file_hash,
                                 index_all=index_all,
                                 chunk=chunk,
-                                hash_previous='0')
-            blocks.append(first_block)
-
-            # Process the rest of the file
+                                hash_previous=blocks[-1].generate_hash()))
             chunk = file.read(500)
-            while chunk:
-                blocks.append(Block(file_hash=file_hash,
-                                    index_all=index_all,
-                                    chunk=chunk,
-                                    hash_previous=blocks[-1].generate_hash()))
-                chunk = file.read(500)
 
-        return blocks
-    except IOError:
-        print("Could not access file")
-        return []
+    return blocks
 
 
 if __name__ == "__main__":
