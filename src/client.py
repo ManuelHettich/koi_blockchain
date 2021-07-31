@@ -128,8 +128,12 @@ def send(filepath: str, host: str, port: int):
     """
 
     try:
+        # Ask the server for the hash of the last block
+        response = requests.get(f"http://{host}:{port}/latest_block_hash")
+        last_block_hash = response.json()["last_block_hash"]
+
         # Generate all the necessary blocks of the local file
-        blocks = block.generate_blocks(filepath)
+        blocks = block.generate_blocks(filepath, last_block_hash)
 
         # Collect all blocks into a single binary file using pickle
         blocks_pickled = pickle.dumps(blocks)

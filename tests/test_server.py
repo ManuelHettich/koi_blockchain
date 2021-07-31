@@ -32,7 +32,7 @@ def test_server_send_positive():
     # Generate the blocks for the test file
     test_file = os.path.join(os.path.dirname(__file__),
                              "../test_files/isaac-martin-61d2hT57MAE-unsplash.jpg")
-    blocks = generate_blocks(test_file)
+    blocks = generate_blocks(test_file, '0')
     # Collect all blocks into a single binary file using pickle
     blocks_pickled = pickle.dumps(blocks)
     # Send the collected blocks in a single transfer to the test server
@@ -41,6 +41,7 @@ def test_server_send_positive():
     assert response.ok
     assert response.json() \
            == {"success": True,
+               "new_file": True,
                "hash": "45f293033312d42815155e871f37b56b4de9b925c07d4a5f6262320c1627db12",
                "index_all": 5285}
 
@@ -55,12 +56,19 @@ def test_server_check_positive():
     # Generate the blocks for the test file
     test_file = os.path.join(os.path.dirname(__file__),
                              "../test_files/isaac-martin-61d2hT57MAE-unsplash.jpg")
-    blocks = generate_blocks(test_file)
+    blocks = generate_blocks(test_file, '0')
     # Collect all blocks into a single binary file using pickle
     blocks_pickled = pickle.dumps(blocks)
     # Send the collected blocks in a single transfer to the test server
     response = client.post("/send",
                            files={"file": blocks_pickled})
+
+    assert response.ok
+    assert response.json() \
+           == {"success": True,
+               "new_file": False,
+               "hash": "45f293033312d42815155e871f37b56b4de9b925c07d4a5f6262320c1627db12",
+               "index_all": 5285}
 
     # Send the SHA256 checksum of the file to the server to be checked
     response = client.get("/check",
@@ -83,7 +91,10 @@ def test_server_check_negative():
     # Generate the blocks for the test file which is not present on the server
     test_file = os.path.join(os.path.dirname(__file__),
                              "../test_files/debashis-rc-biswas-3U4gGsGNsMY-unsplash.jpg")
-    blocks = generate_blocks(test_file)
+    # Ask the server for the hash of the last block
+    response = client.get("/latest_block_hash")
+    last_block_hash = response.json()["last_block_hash"]
+    blocks = generate_blocks(test_file, last_block_hash)
 
     # Send the SHA256 checksum of the file to the server to be checked
     response = client.get("/check",
@@ -105,7 +116,10 @@ def test_server_send_second_file():
     # Generate the blocks for the test file which is not present on the server
     test_file = os.path.join(os.path.dirname(__file__),
                              "../test_files/debashis-rc-biswas-3U4gGsGNsMY-unsplash.jpg")
-    blocks = generate_blocks(test_file)
+    # Ask the server for the hash of the last block
+    response = client.get("/latest_block_hash")
+    last_block_hash = response.json()["last_block_hash"]
+    blocks = generate_blocks(test_file, last_block_hash)
     # Collect all blocks into a single binary file using pickle
     blocks_pickled = pickle.dumps(blocks)
     # Send the collected blocks in a single transfer to the test server
@@ -114,6 +128,7 @@ def test_server_send_second_file():
     assert response.ok
     assert response.json() \
            == {"success": True,
+               "new_file": True,
                "hash": "415d4f66e1b8b9083014dcdca5ddd7d1dcca3f5a4a120603169b951b1c5fa0c9",
                "index_all": 1704}
 

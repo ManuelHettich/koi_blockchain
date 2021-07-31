@@ -1,7 +1,6 @@
 """
 This module provides all the functionalities of the server.
 """
-
 import pickle
 from fastapi import FastAPI, File, UploadFile
 import uvicorn
@@ -23,28 +22,58 @@ def health_check():
     return {"ID": "8dbaaa72-ff7a-4f95-887c-e3109e577edd"}
 
 
+@app.get("/latest_block_hash")
+def latest_block_hash():
+    """
+    Return the hash of the currently last block in the chain or '0' if there
+    are no files stored on the server yet.
+
+    :return: The hash of the last block in the chain or '0' encoded as JSON
+    """
+
+    if len(blocks) == 0:
+        # There are no files stored on the server yet
+        return {"last_block_hash": '0'}
+    return {"last_block_hash": blocks[-1].generate_hash()}
+
+
 @app.post("/send")
 def send_file(file: UploadFile = File(...)):
     """
-    Accept a list of Block objects encoded via pickle in a single transfer and store it in-memory
-    in a list of lists (non-persistent).
+    Accept a list of Block objects encoded via pickle in a single transfer and store it in memory
+    in a single list (non-persistent) if it is not already stored on the server.
 
-    :param file: A list of Block objects encoded via pickle.dumps() related to a single file
+    :param file: A list of all the Block objects encoded via pickle.dumps() related to a single file
     :return: The SHA256 hash checksum of the original file and the number of received Block
-    objects as JSON
+    objects as well as a success message and specifying whether it is a new file as JSON
     """
 
     # Load the transferred Block instances as a list
     received_blocks: [Block] = pickle.loads(file.file.read())
+    file_hash = received_blocks[0].hash
+    index_all = received_blocks[0].index_all
 
-    # Only store the received list of blocks if it is non-empty
+    # Only store the received list of blocks if it is non-empty and if it is a new file
     if len(received_blocks) > 0:
-        blocks.append(received_blocks)
+        for block in blocks:
+            if block.hash == file_hash:
+                # Return the hash of the original file and the number of blocks to the client
+                return {"success": True,
+                        "new_file": False,
+                        "hash": file_hash,
+                        "index_all": index_all}
 
-    # Return the hash of the original file and the number of blocks to the client as JSON
-    return {"success": True,
-            "hash": received_blocks[0].hash,
-            "index_all": len(received_blocks)}
+        # Add the received blocks to the server list
+        blocks.extend(received_blocks)
+
+        # Return the hash of the original file and the number of blocks to the client as JSON
+        return {"success": True,
+                "new_file": True,
+                "hash": received_blocks[0].hash,
+                "index_all": len(received_blocks)}
+
+    # Return an error message since the server did not receive any Block objects
+    return {"success": False}
 
 
 @app.get("/check")
@@ -59,52 +88,62 @@ def check_file(file_hash: str, index_all: int):
     :return: The result of the check as JSON in the format {"check": boolean, "hash": file_hash}
     """
 
-    # Boolean flag to indicate whether the file is stored on this server
-    # and its integrity is valid
-    integrity_valid = False
-
-    # Find the right list of blocks in the server list and check its integrity
-    for blocks_per_file in blocks:
-        # Find the correct list of blocks
-        if blocks_per_file[0].hash == file_hash:
-            # Check the integrity of the file stored on the server
-            integrity_valid = blocks_per_file[0]\
-                .check_file_integrity(blocks_of_file=blocks_per_file,
+    # Find the first correct block in the server list and check its integrity
+    for block_idx, block in enumerate(blocks):
+        if block.hash == file_hash:
+            # Check the integrity of the specified file stored on the server
+            file_integrity = block \
+                .check_file_integrity(blocks=blocks,
+                                      index=block_idx,
                                       file_hash=file_hash,
                                       index_all=index_all)
 
-    return {"check": integrity_valid, "hash": file_hash}
+            return {"check": file_integrity, "hash": file_hash}
+    # Could not find a matching block on this server
+    return {"check": False, "hash": file_hash}
 
 
 @app.get("/check_integrity")
 def check_integrity():
     """
     Check the integrity of all the files on the server by checking their respective
-    hashes sequentially, starting from the first block of each file.
+    hashes sequentially, starting from the first block.
 
     :return: The result of the integrity check as JSON in the format {"integrity_check": boolean}
     """
 
-    # Go through each list of blocks stored on the server
-    for blocks_per_file in blocks:
-        counter = 1
-        # Calculate the hash of the first block of each file
-        current_block_hash = blocks_per_file[0].generate_hash()
-        # Check if the next block of each file is present by checking
-        # their attribute "hash_previous"
-        while counter != len(blocks_per_file):
-            next_block_found = False
-            for block in blocks_per_file:
-                if block.hash_previous == current_block_hash:
-                    # Found the next sequential block in line
-                    current_block_hash = block.generate_hash()
-                    next_block_found = True
-                    break
-            if next_block_found:
-                counter += 1
-            else:
-                # Could not find the correct next block in the chain
-                return {"integrity_check": False}
+    if len(blocks) == 0:
+        # There are no blocks stored on the server yet
+        return {"integrity_check": True}
+
+    # Initialise counter variables
+    block_counter = 1
+    num_blocks = len(blocks)
+    current_block = blocks[0]
+    current_block_hash = current_block.generate_hash()
+    # next_block = list(filter(lambda block: block.hash_previous == current_block_hash))
+
+    # The first block has to reference '0' as the previous hash
+    if current_block.hash_previous != "0":
+        return {"integrity_check": False}
+
+    # Search the next block with the hash of the current block as its "hash_previous" attribute
+    # until all blocks are accounted for
+    while block_counter != num_blocks:
+        next_block_found = False
+        for block in blocks:
+            if block.hash_previous == current_block_hash:
+                # Found the next sequential block in line
+                next_block_found = True
+                current_block = block
+                current_block_hash = current_block.generate_hash()
+                break
+        if next_block_found:
+            block_counter += 1
+        else:
+            # Could not find the next block in the chain
+            return {"integrity_check": block_counter == num_blocks}
+    # Traversed successfully through all the blocks on the server
     return {"integrity_check": True}
 
 
