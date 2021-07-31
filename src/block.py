@@ -116,7 +116,8 @@ def calculate_file_hash(filepath):
 def generate_blocks(filepath):
     """
     Generate all the necessary Block objects of a given file by splitting
-    the files into many 500 byte sized chunks.
+    the files into many 500 byte sized chunks. The first Block object
+    initialises its hash_previous attribute with '0'.
 
     :param filepath: Relative path to the file
     :return: A list of all the Block objects of the given file
