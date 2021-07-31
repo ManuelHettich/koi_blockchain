@@ -49,31 +49,35 @@ def send_file(file: UploadFile = File(...)):
     """
 
     # Load the transferred Block instances as a list
-    received_blocks: [Block] = pickle.loads(file.file.read())
-    file_hash = received_blocks[0].hash
-    index_all = received_blocks[0].index_all
 
-    # Only store the received list of blocks if it is non-empty and if it is a new file
-    if len(received_blocks) > 0:
-        for block in blocks:
-            if block.hash == file_hash:
-                # Return the hash of the original file and the number of blocks to the client
-                return {"success": True,
-                        "new_file": False,
-                        "hash": file_hash,
-                        "index_all": index_all}
+    try:
+        received_blocks: [Block] = pickle.loads(file.file.read())
+        file_hash = received_blocks[0].hash
+        index_all = received_blocks[0].index_all
 
-        # Add the received blocks to the server list
-        blocks.extend(received_blocks)
+        # Only store the received list of blocks if it is non-empty and if it is a new file
+        if len(received_blocks) > 0:
+            for block in blocks:
+                if block.hash == file_hash:
+                    # Return the hash of the original file and the number of blocks to the client
+                    return {"success": True,
+                            "new_file": False,
+                            "hash": file_hash,
+                            "index_all": index_all}
 
-        # Return the hash of the original file and the number of blocks to the client as JSON
-        return {"success": True,
-                "new_file": True,
-                "hash": received_blocks[0].hash,
-                "index_all": len(received_blocks)}
+            # Add the received blocks to the server list
+            blocks.extend(received_blocks)
 
-    # Return an error message since the server did not receive any Block objects
-    return {"success": False}
+            # Return the hash of the new file and the number of blocks to the client as JSON
+            return {"success": True,
+                    "new_file": True,
+                    "hash": received_blocks[0].hash,
+                    "index_all": len(received_blocks)}
+
+        # Return an error message since the server did not receive any Block objects
+        return {"success": False}
+    except (IndexError, pickle.UnpicklingError):
+        return {"success": False}
 
 
 @app.get("/check")

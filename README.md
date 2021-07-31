@@ -1,5 +1,5 @@
 # blockchain_project
-Blockchain Server and Client for Netzwerkprogrammierung (SS 2021)
+Blockchain Server und Client für das Modul Netzwerkprogrammierung (SS 2021)
 
 Dieses Projekt stellt eine Interpretation eines Blockchain-Netzwerks dar. Es besteht aus einem Server und einem Client,
 welche miteinander kommunizieren können. Der Client kann Dateien (Texte, Bilder, etc.) einlesen, in einzelne
