@@ -1,3 +1,7 @@
+"""
+This module provides all the functionalities of the server.
+"""
+
 import pickle
 from fastapi import FastAPI, File, UploadFile
 import uvicorn
@@ -64,11 +68,44 @@ def check_file(file_hash: str, index_all: int):
         # Find the correct list of blocks
         if blocks_per_file[0].hash == file_hash:
             # Check the integrity of the file stored on the server
-            integrity_valid = blocks_per_file[0].check_file_integrity(blocks_of_file=blocks_per_file,
-                                                                      file_hash=file_hash,
-                                                                      index_all=index_all)
+            integrity_valid = blocks_per_file[0]\
+                .check_file_integrity(blocks_of_file=blocks_per_file,
+                                      file_hash=file_hash,
+                                      index_all=index_all)
 
     return {"check": integrity_valid, "hash": file_hash}
+
+
+@app.get("/check_integrity")
+def check_integrity():
+    """
+    Check the integrity of all the files on the server by checking their respective
+    hashes sequentially, starting from the first block of each file.
+
+    :return: The result of the integrity check as JSON in the format {"integrity_check": boolean}
+    """
+
+    # Go through each list of blocks stored on the server
+    for blocks_per_file in blocks:
+        counter = 1
+        # Calculate the hash of the first block of each file
+        current_block_hash = blocks_per_file[0].generate_hash()
+        # Check if the next block of each file is present by checking
+        # their attribute "hash_previous"
+        while counter != len(blocks_per_file):
+            next_block_found = False
+            for block in blocks_per_file:
+                if block.hash_previous == current_block_hash:
+                    # Found the next sequential block in line
+                    current_block_hash = block.generate_hash()
+                    next_block_found = True
+                    break
+            if next_block_found:
+                counter += 1
+            else:
+                # Could not find the correct next block in the chain
+                return {"integrity_check": False}
+    return {"integrity_check": True}
 
 
 if __name__ == '__main__':

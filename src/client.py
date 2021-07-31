@@ -1,3 +1,7 @@
+"""
+This module provides all the functionalities of the client.
+"""
+
 import argparse
 import sys
 import os

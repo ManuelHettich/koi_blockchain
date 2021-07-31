@@ -1,8 +1,24 @@
+"""
+This module provides the Block class and several helper functions.
+"""
+
 import os
 import hashlib
 
 
 class Block:
+    """
+    The Block object contains all the necessary attributes as required by
+    the project specification and it can generate its own hash as well
+    as check the integrity of a file when provided a list of Block objects.
+
+    :param file_hash: Hash of the original file
+    :param index_all: The amount of blocks of the original file
+    :param chunk: A 500 byte chunk of the original file
+    :param hash_previous: The hash of the previous Block object in the chain
+                          (the first Block contains a '0')
+    """
+
     hash: str
     index_all: int
     chunk: bytes
@@ -52,16 +68,17 @@ class Block:
         if (self.index_all != index_all or
                 self.hash_previous != '0'):
             return False
-        # Check the second block
+        # Finish if there was only one block
         if len(blocks_of_file) == 1:
             # The file has only one block and it was already correctly checked
             return True
-        else:
-            second_block = blocks_of_file[1]
-            if (second_block.index_all != index_all or
-                    second_block.hash != file_hash or
-                    second_block.hash_previous != self.generate_hash()):
-                return False
+
+        # Check the second block
+        second_block = blocks_of_file[1]
+        if (second_block.index_all != index_all or
+                second_block.hash != file_hash or
+                second_block.hash_previous != self.generate_hash()):
+            return False
 
         # Check the rest of the blocks
         for block_idx, block in list(enumerate(blocks_of_file))[2:]:
@@ -75,21 +92,36 @@ class Block:
 
 
 def calculate_file_hash(filepath):
+    """
+    Calculate the SHA256 checksum hash of a given file.
+
+    :param filepath: Relative path to the file
+    :return: SHA256 checksum hash of the file
+    """
+
     # Calculate the hash (SHA256 checksum) for a given file
-    buffer_size = 1024 * 1024
+    buffer_size = 1024 * 2048
     sha256 = hashlib.sha256()
 
     with open(filepath, "rb") as file:
         while True:
+            # Only read in 2 MB at a time to minimise memory usage
             file_buffer = file.read(buffer_size)
             if not file_buffer:
                 break
             sha256.update(file_buffer)
-
     return sha256.hexdigest()
 
 
 def generate_blocks(filepath):
+    """
+    Generate all the necessary Block objects of a given file by splitting
+    the files into many 500 byte sized chunks.
+
+    :param filepath: Relative path to the file
+    :return: A list of all the Block objects of the given file
+    """
+
     # Get the SHA256 hash of the whole file
     file_hash = calculate_file_hash(filepath)
 
