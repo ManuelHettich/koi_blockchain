@@ -28,8 +28,50 @@ class Block:
         block_hash.update(bytes(self.hash_previous, 'utf-8'))
         return block_hash.hexdigest()
 
-    def check_file_integrity(self):
-        pass
+    def check_file_integrity(self, blocks_of_file, file_hash, index_all):
+        """
+        Check if all the blocks belonging to this first block of a file have a valid
+        integrity. This method must be called on the first block of a file and it only
+        returns True if each block contains the correct hash of the original file
+        (SHA256 checksum), there are a correct number of blocks and they reference
+        each other correctly in a sequential way using their individual hashes.
+
+        :param blocks_of_file: A list of all the blocks of the file
+        :param file_hash: The original hash (SHA256 checksum) of the file
+        :param index_all: The original number of blocks of the file
+        :return: A boolean statement about whether the file has a valid integrity
+        """
+
+        # Check the number of blocks of the original file
+        if len(blocks_of_file) != index_all:
+            # The number of blocks does not match the original count
+            return False
+
+        # Check if each block of the given file references the correct hashes and number of blocks
+        # Check the first block
+        if (self.index_all != index_all or
+                self.hash_previous != '0'):
+            return False
+        # Check the second block
+        if len(blocks_of_file) == 1:
+            # The file has only one block and it was already correctly checked
+            return True
+        else:
+            second_block = blocks_of_file[1]
+            if (second_block.index_all != index_all or
+                    second_block.hash != file_hash or
+                    second_block.hash_previous != self.generate_hash()):
+                return False
+
+        # Check the rest of the blocks
+        for block_idx, block in list(enumerate(blocks_of_file))[2:]:
+            if (block.index_all != index_all or
+                    block.hash != file_hash or
+                    block.hash_previous != blocks_of_file[block_idx - 1].generate_hash()):
+                return False
+
+        # All checks passed for this file
+        return True
 
 
 def calculate_file_hash(filepath):

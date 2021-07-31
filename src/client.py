@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 import pickle
 import requests
 from src import block
@@ -144,8 +145,8 @@ def send(filepath: str, host: str, port: int):
 def check(filepath: str, host: str, port: int):
     """
     Check if a given file is stored on the specified server using its
-    SHA256 checksum (hash) and print the response of the server in the
-    command line interface.
+    SHA256 checksum (hash) as well as the correct number of blocks
+    and print the response of the server in the command line interface.
 
     :param filepath: The filepath of the file to be checked on the server
     :param host: The IP address or hostname of the server
@@ -157,12 +158,17 @@ def check(filepath: str, host: str, port: int):
         # Generate the SHA256 checksum of the given file
         file_hash = block.calculate_file_hash(filepath)
 
+        # Calculate the number of blocks needed for this file
+        filesize = os.path.getsize(filepath)
+        index_all = filesize // 500 + (filesize % 500 > 0)
+
         # Check connection to the server and its authenticity
         check_connection(host, port)
 
         # Send the SHA256 checksum of the file to the server to be checked
         response = requests.get(f"http://{host}:{port}/check",
-                                params={"file_hash": file_hash})
+                                params={"file_hash": file_hash,
+                                        "index_all": index_all})
 
         # Print the response from the server
         print(f"Response from Server: {response.json()}")
