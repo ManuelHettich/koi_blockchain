@@ -19,18 +19,20 @@ Nachfolgend ist ein beispielhafter Programmablauf angegeben:
 
 
 ```
-[send] / [check] a local file (relative path from root folder) or [quit]
+[send] / [check] a local file (relative path from root folder), check the [integrity] of the server chain or [quit]
 > send test_files/isaac-martin-61d2hT57MAE-unsplash.jpg
 Response from Server: {'success': True, 'hash': '45f293033312d42815155e871f37b56b4de9b925c07d4a5f6262320c1627db12', 'index_all': 5285}
 > check test_files/isaac-martin-61d2hT57MAE-unsplash.jpg
 Response from Server: {'check': True, 'hash': '45f293033312d42815155e871f37b56b4de9b925c07d4a5f6262320c1627db12'}
 > check test_files/debashis-rc-biswas-3U4gGsGNsMY-unsplash.jpg
 Response from Server: {'check': False, 'hash': '415d4f66e1b8b9083014dcdca5ddd7d1dcca3f5a4a120603169b951b1c5fa0c9'}
+> integrity
+Response from Server: {'integrity_check': True}
 ```
 
 
 ## Tests
-Alle Tests der wichtigsten Funktionen werden mit pytest anhand des folgenden Befehlaufrufs im Hauptordner
+Alle Tests der wichtigsten Funktionen werden mit pytest anhand des folgenden Befehlsaufrufs im Hauptordner
 des Projekts durchgeführt: 
 
 `$ pytest`

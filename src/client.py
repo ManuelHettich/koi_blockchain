@@ -11,7 +11,8 @@ from src import block
 
 SERVER_ID = "8dbaaa72-ff7a-4f95-887c-e3109e577edd"
 
-HELP_MSG = "[send] / [check] a local file (relative path from root folder) or [quit]"
+HELP_MSG = "[send] / [check] a local file (relative path from root folder), " \
+           "check the [integrity] of the server chain or [quit]"
 ERROR_CMD_MSG = "The provided command is unknown or the filepath is missing"
 ERROR_FILE_MSG = "Could not access the given filepath"
 ERROR_SRV_MSG = "Could not connect to the given server and verify its authenticity"
@@ -50,6 +51,9 @@ def main():
             if user_input[0] == "quit":
                 # Quit program if the user only entered "quit"
                 sys.exit()
+            if user_input[0] == "integrity":
+                # Check the integrity of the chain on the server
+                check_integrity(host, port)
             else:
                 print(ERROR_CMD_MSG)
                 continue
@@ -181,6 +185,23 @@ def check(filepath: str, host: str, port: int):
         sys.exit()
     except IOError:
         print(ERROR_FILE_MSG)
+
+
+def check_integrity(host, port):
+    """
+    Check the integrity of the file chains on the specified server and print
+    its response in the command line interface.
+
+    :param host: The IP address or hostname of the server
+    :param port: The port of the server
+    :return: None
+    """
+
+    # Trigger the integrity check on the server
+    response = requests.get(f"http://{host}:{port}/check_integrity")
+
+    # Print the response from the server
+    print(f"Response from Server: {response.json()}")
 
 
 if __name__ == "__main__":
