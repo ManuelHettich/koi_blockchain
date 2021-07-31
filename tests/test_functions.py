@@ -1,5 +1,7 @@
 """
-This module provides tests for most important functions in the different modules.
+This module provides tests for most important functions in the different modules of the project.
+
+@author: Manuel Hettich
 """
 
 import pickle

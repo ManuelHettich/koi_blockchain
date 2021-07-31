@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module src.client</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.client</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="..">index</a><br><a href="file:/Users/manuel/CS/git/KOI/GitLab/blockchain_project/src/client.py">/Users/manuel/CS/git/KOI/GitLab/blockchain_project/src/client.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;provides&nbsp;all&nbsp;the&nbsp;functionalities&nbsp;of&nbsp;the&nbsp;client.&nbsp;It&nbsp;can&nbsp;send&nbsp;files&nbsp;to&nbsp;the&nbsp;server,&nbsp;check&nbsp;if&nbsp;they&nbsp;are&nbsp;already<br>
+stored&nbsp;on&nbsp;the&nbsp;server&nbsp;and&nbsp;check&nbsp;the&nbsp;integrity&nbsp;of&nbsp;the&nbsp;chain&nbsp;on&nbsp;the&nbsp;server.<br>
+The&nbsp;client&nbsp;is&nbsp;started&nbsp;by&nbsp;providing&nbsp;the&nbsp;hostname&nbsp;/&nbsp;IP&nbsp;address&nbsp;and&nbsp;the&nbsp;port&nbsp;of&nbsp;the&nbsp;server&nbsp;as&nbsp;arguments&nbsp;on&nbsp;the&nbsp;CLI,<br>
+for&nbsp;example:&nbsp;python3&nbsp;-m&nbsp;src.client&nbsp;127.0.0.1&nbsp;8000<br>
+&nbsp;<br>
+@author:&nbsp;Manuel&nbsp;Hettich</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="argparse.html">argparse</a><br>
+<a href="src.block.html">src.block</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="pickle.html">pickle</a><br>
+</td><td width="25%" valign=top><a href="requests.html">requests</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-check"><strong>check</strong></a>(filepath: str, host: str, port: int)</dt><dd><tt>Check&nbsp;if&nbsp;a&nbsp;given&nbsp;file&nbsp;is&nbsp;stored&nbsp;on&nbsp;the&nbsp;specified&nbsp;server&nbsp;using&nbsp;its<br>
+SHA256&nbsp;checksum&nbsp;(hash)&nbsp;as&nbsp;well&nbsp;as&nbsp;the&nbsp;correct&nbsp;number&nbsp;of&nbsp;blocks<br>
+and&nbsp;print&nbsp;the&nbsp;response&nbsp;of&nbsp;the&nbsp;server&nbsp;in&nbsp;the&nbsp;command&nbsp;line&nbsp;interface.<br>
+&nbsp;<br>
+:param&nbsp;filepath:&nbsp;The&nbsp;filepath&nbsp;of&nbsp;the&nbsp;file&nbsp;to&nbsp;be&nbsp;checked&nbsp;on&nbsp;the&nbsp;server<br>
+:param&nbsp;host:&nbsp;The&nbsp;IP&nbsp;address&nbsp;or&nbsp;hostname&nbsp;of&nbsp;the&nbsp;server<br>
+:param&nbsp;port:&nbsp;The&nbsp;port&nbsp;of&nbsp;the&nbsp;server<br>
+:return:&nbsp;None</tt></dd></dl>
+ <dl><dt><a name="-check_connection"><strong>check_connection</strong></a>(host: str, port: int)</dt><dd><tt>Check&nbsp;if&nbsp;the&nbsp;given&nbsp;server&nbsp;is&nbsp;online&nbsp;and&nbsp;reports&nbsp;a&nbsp;correct&nbsp;ID.<br>
+&nbsp;<br>
+:param&nbsp;host:&nbsp;The&nbsp;IP&nbsp;address&nbsp;or&nbsp;hostname&nbsp;of&nbsp;the&nbsp;server<br>
+:param&nbsp;port:&nbsp;The&nbsp;port&nbsp;of&nbsp;the&nbsp;server<br>
+:return:&nbsp;None</tt></dd></dl>
+ <dl><dt><a name="-check_integrity"><strong>check_integrity</strong></a>(host, port)</dt><dd><tt>Check&nbsp;the&nbsp;integrity&nbsp;of&nbsp;the&nbsp;file&nbsp;chains&nbsp;on&nbsp;the&nbsp;specified&nbsp;server&nbsp;and&nbsp;print<br>
+its&nbsp;response&nbsp;in&nbsp;the&nbsp;command&nbsp;line&nbsp;interface.<br>
+&nbsp;<br>
+:param&nbsp;host:&nbsp;The&nbsp;IP&nbsp;address&nbsp;or&nbsp;hostname&nbsp;of&nbsp;the&nbsp;server<br>
+:param&nbsp;port:&nbsp;The&nbsp;port&nbsp;of&nbsp;the&nbsp;server<br>
+:return:&nbsp;None</tt></dd></dl>
+ <dl><dt><a name="-main"><strong>main</strong></a>()</dt><dd><tt>Run&nbsp;the&nbsp;main&nbsp;client&nbsp;program&nbsp;by&nbsp;checking&nbsp;the&nbsp;connection&nbsp;to&nbsp;the&nbsp;server<br>
+and&nbsp;asking&nbsp;the&nbsp;user&nbsp;for&nbsp;a&nbsp;command.&nbsp;It&nbsp;can&nbsp;send&nbsp;a&nbsp;given&nbsp;file&nbsp;to&nbsp;the&nbsp;server<br>
+and&nbsp;check&nbsp;whether&nbsp;it&nbsp;is&nbsp;stored&nbsp;there.<br>
+&nbsp;<br>
+:return:&nbsp;None</tt></dd></dl>
+ <dl><dt><a name="-parse_arguments"><strong>parse_arguments</strong></a>()</dt><dd><tt>Read&nbsp;in&nbsp;the&nbsp;hostname&nbsp;/&nbsp;address&nbsp;and&nbsp;port&nbsp;of&nbsp;the&nbsp;server&nbsp;from&nbsp;the&nbsp;command&nbsp;line&nbsp;arguments<br>
+with&nbsp;argparse<br>
+&nbsp;<br>
+:return:&nbsp;Arguments&nbsp;parsed&nbsp;from&nbsp;the&nbsp;CLI&nbsp;with&nbsp;argparse</tt></dd></dl>
+ <dl><dt><a name="-send"><strong>send</strong></a>(filepath: str, host: str, port: int)</dt><dd><tt>Send&nbsp;a&nbsp;given&nbsp;file&nbsp;to&nbsp;the&nbsp;specified&nbsp;server&nbsp;using&nbsp;the&nbsp;Block&nbsp;class<br>
+and&nbsp;print&nbsp;the&nbsp;response&nbsp;of&nbsp;the&nbsp;server&nbsp;in&nbsp;the&nbsp;command&nbsp;line.<br>
+&nbsp;<br>
+:param&nbsp;filepath:&nbsp;The&nbsp;filepath&nbsp;of&nbsp;the&nbsp;file&nbsp;to&nbsp;be&nbsp;sent&nbsp;to&nbsp;the&nbsp;server<br>
+:param&nbsp;host:&nbsp;The&nbsp;IP&nbsp;address&nbsp;or&nbsp;hostname&nbsp;of&nbsp;the&nbsp;server<br>
+:param&nbsp;port:&nbsp;The&nbsp;port&nbsp;of&nbsp;the&nbsp;server<br>
+:return:&nbsp;None</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>ERROR_CMD_MSG</strong> = 'The provided command is unknown or the filepath is missing'<br>
+<strong>ERROR_FILE_MSG</strong> = 'Could not access the given filepath'<br>
+<strong>ERROR_SRV_MSG</strong> = 'Could not connect to the given server and verify its authenticity'<br>
+<strong>HELP_MSG</strong> = '[send] / [check] a local file (relative path fro...eck the [integrity] of the server chain or [quit]'<br>
+<strong>SERVER_ID</strong> = '8dbaaa72-ff7a-4f95-887c-e3109e577edd'</td></tr></table>
+</body></html>

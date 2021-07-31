@@ -1,5 +1,15 @@
 """
-This module provides all the functionalities of the server.
+This module provides all the functionalities of the server. It can state whether
+the server is online, provide the hash of the last block in its chain, accept new
+files, check if a file is already stored on the server and check if the integrity
+of the chain is valid.
+The server is started with default values with the following command from the root
+directory of the project:
+python3 -m src.server
+The default IP address and port can be changed by using this command:
+uvicorn src.server:app --host <HOST> --port <PORT>
+
+@author: Manuel Hettich
 """
 import pickle
 from fastapi import FastAPI, File, UploadFile

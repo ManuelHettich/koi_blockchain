@@ -12,7 +12,10 @@ Die Blöcke bilden auf dem Server eine kontinuierliche Liste, indem sie jeweils 
 individuellen Hashes referenzieren. Außerdem enthält jeder Block den Hash der originalen Datei, die Anzahl der 
 Blöcke, die zu dieser Datei gehören, und einen 500 byte großen Abschnitt der originalen Datei. Bei der Aufspaltung
 einer neuen Datei fragt der Client immer zuerst beim Server den Hash des dort zuletzt vorhandenen Blockes an, um
-an diesem richtig anzuknüpfen.
+an diesem richtig anzuknüpfen. Als Hashes der originalen Datei sowie der einzelnen Blöcke werden die SHA256 checksums
+verwendet.
+
+Die exportierten 
 
 _Optionale Zusatzfunktionalität_: Der Server kann außerdem feststellen, ob die Integrität der Chain noch erhalten ist.
 Dafür beginnt er bei dem ersten Block und hangelt sich von diesem zu dem jeweils folgenden, bis das Ende der Chain
@@ -21,20 +24,26 @@ referenziert.
 
 
 ## Starten des Servers
-Server starten, wenn man sich im Hauptordner des Projekts befindet:
+Den Server mit den Standardwerten (http://localhost:8000) starten, wenn man sich im Hauptordner des Projekts befindet:
 
 `$ python3 -m src.server`
 
+Der Server kann auch wie folgt mit einer alternativen Adresse und Port im Hauptordner gestartet werden:
+
+`$ uvicorn -m src.server:app --host <HOST> --port <PORT>`
 
 ## Starten & Verwendung des Clients
-Client starten, wenn man sich im Hauptordner des Projekts befindet:
+Den Client starten, wenn man sich im Hauptordner des Projekts befindet:
 
 `$ python3 -m src.client 127.0.0.1 8000`
 
 Anschließend können Dateien zu dem verbundenen Server gesendet werden und es kann geprüft werden,
 ob einzelne Dateien bereits auf dem Server gespeichert worden sind. Dafür können die Befehle `send` bzw. `check`
-mit der Angabe des relativen Pfads der jeweiligen Datei verwendet werden. Nach jedem Befehl wird die Antwort des Servers ausgegeben.
-Nachfolgend ist ein beispielhafter Programmablauf angegeben:
+mit der Angabe des relativen Pfads der jeweiligen Datei verwendet werden. Außerdem kann mit dem Befehl `integrity`
+die Integrität der Chain auf dem Server überprüft werden und mit dem Befehl `quit` wird das Programm wieder beendet.
+
+Nach jedem Befehl wird die Antwort des Servers ausgegeben. Nachfolgend ist ein beispielhafter Programmablauf angegeben
+(sich wiederholende Ausgaben des Programms sind gekürzt worden):
 
 ```
 [send] / [check] a local file (relative path from root folder), check the [integrity] of the server chain or [quit]

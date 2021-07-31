@@ -1,5 +1,7 @@
 """
 This module provides the Block class and several helper functions.
+
+@author: Manuel Hettich
 """
 
 import os

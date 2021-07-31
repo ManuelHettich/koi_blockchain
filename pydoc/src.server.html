@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module src.server</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="src.html"><font color="#ffffff">src</font></a>.server</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href="..">index</a><br><a href="file:/Users/manuel/CS/git/KOI/GitLab/blockchain_project/src/server.py">/Users/manuel/CS/git/KOI/GitLab/blockchain_project/src/server.py</a></font></td></tr></table>
+    <p><tt>This&nbsp;module&nbsp;provides&nbsp;all&nbsp;the&nbsp;functionalities&nbsp;of&nbsp;the&nbsp;server.&nbsp;It&nbsp;can&nbsp;state&nbsp;whether&nbsp;the&nbsp;server&nbsp;is&nbsp;online,&nbsp;provide&nbsp;the<br>
+hash&nbsp;of&nbsp;the&nbsp;last&nbsp;block&nbsp;in&nbsp;its&nbsp;chain,&nbsp;accept&nbsp;new&nbsp;files,&nbsp;check&nbsp;if&nbsp;a&nbsp;file&nbsp;is&nbsp;already&nbsp;stored&nbsp;on&nbsp;the&nbsp;server&nbsp;and&nbsp;check<br>
+if&nbsp;the&nbsp;integrity&nbsp;of&nbsp;the&nbsp;chain&nbsp;is&nbsp;valid.<br>
+The&nbsp;server&nbsp;is&nbsp;started&nbsp;with&nbsp;default&nbsp;values&nbsp;with&nbsp;the&nbsp;following&nbsp;command&nbsp;from&nbsp;the&nbsp;root&nbsp;directory&nbsp;of&nbsp;the&nbsp;project:<br>
+python3&nbsp;-m&nbsp;src.server<br>
+The&nbsp;default&nbsp;IP&nbsp;address&nbsp;and&nbsp;port&nbsp;can&nbsp;be&nbsp;changed&nbsp;by&nbsp;using&nbsp;this&nbsp;command:&nbsp;uvicorn&nbsp;src.server:app&nbsp;--host&nbsp;&lt;HOST&gt;&nbsp;--port&nbsp;&lt;PORT&gt;<br>
+&nbsp;<br>
+@author:&nbsp;Manuel&nbsp;Hettich</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="pickle.html">pickle</a><br>
+</td><td width="25%" valign=top><a href="uvicorn.html">uvicorn</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-check_file"><strong>check_file</strong></a>(file_hash: str, index_all: int)</dt><dd><tt>Accept&nbsp;the&nbsp;hash&nbsp;of&nbsp;a&nbsp;file&nbsp;and&nbsp;its&nbsp;number&nbsp;of&nbsp;blocks&nbsp;as&nbsp;query&nbsp;parameters&nbsp;and&nbsp;check&nbsp;if<br>
+the&nbsp;corresponding&nbsp;file&nbsp;has&nbsp;already&nbsp;been&nbsp;sent&nbsp;and&nbsp;stored&nbsp;on&nbsp;this&nbsp;server&nbsp;with&nbsp;a&nbsp;valid<br>
+integrity.<br>
+&nbsp;<br>
+:param&nbsp;file_hash:&nbsp;SHA256&nbsp;hash&nbsp;checksum&nbsp;of&nbsp;a&nbsp;file&nbsp;stored&nbsp;on&nbsp;the&nbsp;client<br>
+:param&nbsp;index_all:&nbsp;Number&nbsp;of&nbsp;blocks&nbsp;needed&nbsp;for&nbsp;the&nbsp;file&nbsp;stored&nbsp;on&nbsp;the&nbsp;client<br>
+:return:&nbsp;The&nbsp;result&nbsp;of&nbsp;the&nbsp;check&nbsp;as&nbsp;JSON&nbsp;in&nbsp;the&nbsp;format&nbsp;{"check":&nbsp;boolean,&nbsp;"hash":&nbsp;file_hash}</tt></dd></dl>
+ <dl><dt><a name="-check_integrity"><strong>check_integrity</strong></a>()</dt><dd><tt>Check&nbsp;the&nbsp;integrity&nbsp;of&nbsp;all&nbsp;the&nbsp;files&nbsp;on&nbsp;the&nbsp;server&nbsp;by&nbsp;checking&nbsp;their&nbsp;respective<br>
+hashes&nbsp;sequentially,&nbsp;starting&nbsp;from&nbsp;the&nbsp;first&nbsp;block.<br>
+&nbsp;<br>
+:return:&nbsp;The&nbsp;result&nbsp;of&nbsp;the&nbsp;integrity&nbsp;check&nbsp;as&nbsp;JSON&nbsp;in&nbsp;the&nbsp;format&nbsp;{"integrity_check":&nbsp;boolean}</tt></dd></dl>
+ <dl><dt><a name="-health_check"><strong>health_check</strong></a>()</dt><dd><tt>Indicate&nbsp;whether&nbsp;the&nbsp;server&nbsp;is&nbsp;online&nbsp;and&nbsp;reachable&nbsp;for&nbsp;the&nbsp;client.&nbsp;It&nbsp;also<br>
+provides&nbsp;a&nbsp;unique&nbsp;ID&nbsp;to&nbsp;check&nbsp;its&nbsp;authenticity&nbsp;by&nbsp;the&nbsp;client.<br>
+&nbsp;<br>
+:return:&nbsp;A&nbsp;statement&nbsp;in&nbsp;JSON&nbsp;format&nbsp;with&nbsp;the&nbsp;unique&nbsp;ID&nbsp;of&nbsp;this&nbsp;server.</tt></dd></dl>
+ <dl><dt><a name="-latest_block_hash"><strong>latest_block_hash</strong></a>()</dt><dd><tt>Return&nbsp;the&nbsp;hash&nbsp;of&nbsp;the&nbsp;currently&nbsp;last&nbsp;block&nbsp;in&nbsp;the&nbsp;chain&nbsp;or&nbsp;'0'&nbsp;if&nbsp;there<br>
+are&nbsp;no&nbsp;files&nbsp;stored&nbsp;on&nbsp;the&nbsp;server&nbsp;yet.<br>
+&nbsp;<br>
+:return:&nbsp;The&nbsp;hash&nbsp;of&nbsp;the&nbsp;last&nbsp;block&nbsp;in&nbsp;the&nbsp;chain&nbsp;or&nbsp;'0'&nbsp;encoded&nbsp;as&nbsp;JSON</tt></dd></dl>
+ <dl><dt><a name="-send_file"><strong>send_file</strong></a>(file: fastapi.datastructures.UploadFile = File(Ellipsis))</dt><dd><tt>Accept&nbsp;a&nbsp;list&nbsp;of&nbsp;Block&nbsp;objects&nbsp;encoded&nbsp;via&nbsp;pickle&nbsp;in&nbsp;a&nbsp;single&nbsp;transfer&nbsp;and&nbsp;store&nbsp;it&nbsp;in&nbsp;memory<br>
+in&nbsp;a&nbsp;single&nbsp;list&nbsp;(non-persistent)&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;already&nbsp;stored&nbsp;on&nbsp;the&nbsp;server.<br>
+&nbsp;<br>
+:param&nbsp;file:&nbsp;A&nbsp;list&nbsp;of&nbsp;all&nbsp;the&nbsp;Block&nbsp;objects&nbsp;encoded&nbsp;via&nbsp;pickle.dumps()&nbsp;related&nbsp;to&nbsp;a&nbsp;single&nbsp;file<br>
+:return:&nbsp;The&nbsp;SHA256&nbsp;hash&nbsp;checksum&nbsp;of&nbsp;the&nbsp;original&nbsp;file&nbsp;and&nbsp;the&nbsp;number&nbsp;of&nbsp;received&nbsp;Block<br>
+objects&nbsp;as&nbsp;well&nbsp;as&nbsp;a&nbsp;success&nbsp;message&nbsp;and&nbsp;specifying&nbsp;whether&nbsp;it&nbsp;is&nbsp;a&nbsp;new&nbsp;file&nbsp;as&nbsp;JSON</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__annotations__</strong> = {'blocks': [&lt;class 'src.block.Block'&gt;]}<br>
+<strong>app</strong> = &lt;fastapi.applications.FastAPI object&gt;<br>
+<strong>blocks</strong> = []</td></tr></table>
+</body></html>

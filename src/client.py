@@ -1,5 +1,11 @@
 """
-This module provides all the functionalities of the client.
+This module provides all the functionalities of the client. It can send files to
+the server, check if they are already stored on the server and check the integrity
+of the chain on the server.
+The client is started by providing the hostname / IP address and the port of the
+server as arguments on the CLI, for example: python3 -m src.client 127.0.0.1 8000
+
+@author: Manuel Hettich
 """
 
 import argparse
