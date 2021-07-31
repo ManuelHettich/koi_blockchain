@@ -6,7 +6,8 @@ welche miteinander kommunizieren können. Der Client kann Dateien (Texte, Bilder
 Blöcke unterteilen und diese an den Server schicken. Der Server kann diese Blöcke empfangen, ihren Erhalt bestätigen
 und sie nicht-transient in einer kontinuierlichen Liste (Chain) abspeichern. Der Client kann zudem beim Server anfragen, 
 ob einzelne Dateien bereits abgespeichert worden sind. Diese Anfragen werden vom Server geprüft und beantwortet. Beim
-Empfang von Blöcken einer Datei gibt der Server auch immer an, ob diese Datei für ihn neu ist.
+Empfang von Blöcken einer Datei gibt der Server auch immer an, ob diese Datei für ihn neu ist und bei jedem Kontakt
+zum Server wird immer zuerst der Online-Status und die Authentizität des Servers anhand einer UUID überprüft.
 
 Die Blöcke bilden auf dem Server eine kontinuierliche Liste, indem sie jeweils den vorherigen Block anhand seines
 individuellen Hashes referenzieren. Außerdem enthält jeder Block den Hash der originalen Datei, die Anzahl der 
@@ -15,9 +16,11 @@ einer neuen Datei fragt der Client immer zuerst beim Server den Hash des dort zu
 an diesem richtig anzuknüpfen. Als Hashes der originalen Datei sowie der einzelnen Blöcke werden die SHA256 checksums
 verwendet.
 
-Die exportierten 
+Die exportierten HTML-Dateien von PyDoc sind in dem lokalen Ordner pydoc zu finden.
 
-_Optionale Zusatzfunktionalität_: Der Server kann außerdem feststellen, ob die Integrität der Chain noch erhalten ist.
+**Optionale Zusatzfunktionalität**: Integrität der Server-Chain überprüfen
+
+Der Server kann außerdem feststellen, ob die Integrität der Chain noch erhalten ist.
 Dafür beginnt er bei dem ersten Block und hangelt sich von diesem zu dem jeweils folgenden, bis das Ende der Chain
 erreicht wurde und jeder Block korrekterweise den jeweils vorherigen Block mittels des spezifischen Block-Hashes 
 referenziert.
@@ -28,9 +31,9 @@ Den Server mit den Standardwerten (http://localhost:8000) starten, wenn man sich
 
 `$ python3 -m src.server`
 
-Der Server kann auch wie folgt mit einer alternativen Adresse und Port im Hauptordner gestartet werden:
+Der Server kann auch wie folgt mit einer alternativen Adresse und/oder Port im Hauptordner gestartet werden:
 
-`$ uvicorn -m src.server:app --host <HOST> --port <PORT>`
+`$ python3 -m src.server --host [HOST] --port [PORT]`
 
 ## Starten & Verwendung des Clients
 Den Client starten, wenn man sich im Hauptordner des Projekts befindet:
@@ -42,8 +45,7 @@ ob einzelne Dateien bereits auf dem Server gespeichert worden sind. Dafür könn
 mit der Angabe des relativen Pfads der jeweiligen Datei verwendet werden. Außerdem kann mit dem Befehl `integrity`
 die Integrität der Chain auf dem Server überprüft werden und mit dem Befehl `quit` wird das Programm wieder beendet.
 
-Nach jedem Befehl wird die Antwort des Servers ausgegeben. Nachfolgend ist ein beispielhafter Programmablauf angegeben
-(sich wiederholende Ausgaben des Programms sind gekürzt worden):
+Nach jedem Befehl wird die Antwort des Servers ausgegeben. Nachfolgend ist ein beispielhafter Programmablauf angegeben:
 
 ```
 [send] / [check] a local file (relative path from root folder), check the [integrity] of the server chain or [quit]

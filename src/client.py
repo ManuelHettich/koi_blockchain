@@ -26,9 +26,11 @@ ERROR_SRV_MSG = "Could not connect to the given server and verify its authentici
 
 def main():
     """
-    Run the main client program by checking the connection to the server
-    and asking the user for a command. It can send a given file to the server
-    and check whether it is stored there.
+    Run the main client program by asking the user for a command. It can send a
+    given file to the server, check whether it is stored there and confirm the
+    integrity of the chain on the server. The host / IP address and the port of
+    the server are parsed by argparse in the CLI. Before executing any command,
+    the online status and the authenticity of the server is confirmed.
 
     :return: None
     """
@@ -42,14 +44,15 @@ def main():
     # Check if the given server is online and reports a correct ID
     check_connection(host, port)
 
+    print(HELP_MSG)
     while True:
         # Ask user for an input what to do next
-        print(HELP_MSG)
         user_input = input("> ").split()
 
         # Wrong amount of inputs
         if len(user_input) < 1 or len(user_input) > 2:
             print(ERROR_CMD_MSG)
+            print(HELP_MSG)
             continue
 
         # Only one input term
@@ -62,6 +65,7 @@ def main():
                 check_integrity(host, port)
             else:
                 print(ERROR_CMD_MSG)
+                print(HELP_MSG)
                 continue
         else:
             # In this case we have got 2 input terms from the user
@@ -207,11 +211,18 @@ def check_integrity(host, port):
     :return: None
     """
 
-    # Trigger the integrity check on the server
-    response = requests.get(f"http://{host}:{port}/check_integrity")
+    try:
+        # Check connection to the server and its authenticity
+        check_connection(host, port)
 
-    # Print the response from the server
-    print(f"Response from Server: {response.json()}")
+        # Trigger the integrity check on the server
+        response = requests.get(f"http://{host}:{port}/check_integrity")
+
+        # Print the response from the server
+        print(f"Response from Server: {response.json()}")
+    except requests.exceptions.RequestException:
+        print(ERROR_SRV_MSG)
+        sys.exit()
 
 
 if __name__ == "__main__":

@@ -7,10 +7,12 @@ The server is started with default values with the following command from the ro
 directory of the project:
 python3 -m src.server
 The default IP address and port can be changed by using this command:
-uvicorn src.server:app --host <HOST> --port <PORT>
+python3 -m src.server --host [HOST] --port [PORT]
 
 @author: Manuel Hettich
 """
+
+import argparse
 import pickle
 from fastapi import FastAPI, File, UploadFile
 import uvicorn
@@ -162,4 +164,15 @@ def check_integrity():
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    # Use argparse in order to enable the optional setting of different server parameters
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host",
+                        help="hostname or ip address of the server, e.g. 127.0.0.1",
+                        default="127.0.0.1")
+    parser.add_argument("--port",
+                        help="port of the server, e.g. 8000",
+                        type=int,
+                        default=8000)
+    args = parser.parse_args()
+
+    uvicorn.run(app, host=args.host, port=args.port)
